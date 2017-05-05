@@ -107,6 +107,14 @@
 		shenqi,hall-irq-gpio = <&tlmm 124 0x0>;
 		ssc_vdd-supply = <&pm8994_l19>;
 	};
+	
+	qcom,bcl {
+		/delete-property/ qcom,bcl-hotplug-list;
+		/delete-property/ qcom,bcl-soc-hotplug-list;
+		qcom,ibat-monitor {
+			qcom,mitigation-freq-khz = <1132800>;
+		};
+	};
 };
 
 &wdog {
