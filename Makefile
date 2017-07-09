@@ -299,8 +299,8 @@ CCACHE := $(shell which ccache)
 
 HOSTCC       = $(CCACHE) gcc
 HOSTCXX      = $(CCACHE) g++
-HOSTCFLAGS   = -Wall -Wmissing-prototypes -Wstrict-prototypes -O2 -fomit-frame-pointer -std=gnu89
-HOSTCXXFLAGS = -O2
+HOSTCFLAGS   = -Wall -Wmissing-prototypes -Wstrict-prototypes -O3 -fomit-frame-pointer -fgcse-las -fgraphite -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block -pipe -Wno-sign-compare -Wno-missing-field-initializers
+HOSTCXXFLAGS = -O3 -fgcse-las -fgraphite -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block -pipe
 
 ifeq ($(shell $(HOSTCC) -v 2>&1 | grep -c "clang version"), 1)
 HOSTCFLAGS  += -Wno-unused-value -Wno-unused-parameter \
@@ -371,15 +371,49 @@ PERL		= perl
 PYTHON		= python
 CHECK		= sparse
 
+
 CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 		  -Wbitwise -Wno-return-void $(CF)
-CFLAGS_MODULE   =
-AFLAGS_MODULE   =
-LDFLAGS_MODULE  =
-CFLAGS_KERNEL	=
-AFLAGS_KERNEL	=
-CFLAGS_GCOV	= -fprofile-arcs -ftest-coverage -fno-tree-loop-im
 
+OPTIMIZFLAGS    =  -fno-common \
+		   -fno-strict-aliasing \
+		   -fgcse-after-reload \
+		   -fno-delete-null-pointer-checks \
+		   -ftree-loop-vectorize \
+		   -ftree-loop-distribute-patterns \
+		   -ftree-slp-vectorize \
+		   -fvect-cost-model \
+		   -ftree-partial-pre \
+		   -fgcse-lm \
+ 		   -fgcse-sm -fsched-spec-load \
+		   -fmodulo-sched-allow-regmoves \
+		   -fpredictive-commoning \
+		   -fmodulo-sched-allow-regmoves \
+		   -fsingle-precision-constant \
+		   -g0 -DNDEBUG 
+		   
+
+GRAPHITE	= -fgraphite-identity -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block
+CFLAGS_MODULE   = $(GRAPHITE)
+AFLAGS_MODULE   = $(GRAPHITE)
+LDFLAGS_MODULE  = --strip-debug
+CFLAGS_KERNEL	= $(OPTIMIZFLAGS) -fpredictive-commoning $(GRAPHITE)
+AFLAGS_KERNEL	= $(OPTIMIZFLAGS) $(GRAPHITE)
+CFLAGS_GCOV	= -fprofile-arcs -ftest-coverage
+CFLAGS_KCOV	= -fsanitize-coverage=trace-pc
+
+O3-ADDS-ONLY =     -finline-functions \
+		   -funswitch-loops \
+		   -fpredictive-commoning \
+		   -fgcse-after-reload \
+		   -ftree-loop-vectorize \
+		   -ftree-loop-distribute-patterns \
+		   -fsplit-paths \
+		   -ftree-slp-vectorize \
+		   -fvect-cost-model \
+		   -ftree-partial-pre \
+		   -fpeel-loops \
+		   -fipa-cp-clone
 
 # Use USERINCLUDE when you must reference the UAPI directories only.
 USERINCLUDE    := \
@@ -400,14 +434,28 @@ LINUXINCLUDE    := \
 
 KBUILD_CPPFLAGS := -D__KERNEL__
 
-KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
+KBUILD_CFLAGS   := $(GRAPHITE) -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-strict-aliasing -fno-common \
 		   -Werror-implicit-function-declaration \
 		   -Wno-format-security \
 		   -std=gnu89
 
-KBUILD_AFLAGS_KERNEL :=
-KBUILD_CFLAGS_KERNEL :=
+# Optimization for Kryo
+KBUILD_CFLAGS	+= -mcpu=cortex-a57+crc+crypto
+
+# Kryo doesn't need 835769/843419 erratum fixes.
+# Some toolchains enable those fixes automatically, so opt-out.
+KBUILD_CFLAGS	+= $(call cc-option, -mno-fix-cortex-a53-835769)
+KBUILD_CFLAGS	+= $(call cc-option, -mno-fix-cortex-a53-843419)
+LDFLAGS_vmlinux	+= $(call ld-option, --no-fix-cortex-a53-835769)
+LDFLAGS_vmlinux	+= $(call ld-option, --no-fix-cortex-a53-843419)
+LDFLAGS_MODULE	+= $(call ld-option, --no-fix-cortex-a53-835769)
+LDFLAGS_MODULE	+= $(call ld-option, --no-fix-cortex-a53-843419)
+LDFLAGS		+= $(call ld-option, --no-fix-cortex-a53-835769)
+LDFLAGS		+= $(call ld-option, --no-fix-cortex-a53-843419)
+
+KBUILD_AFLAGS_KERNEL := $(OPTIMIZFLAGS) $(GRAPHITE)
+KBUILD_CFLAGS_KERNEL := $(OPTIMIZFLAGS) $(GRAPHITE)
 KBUILD_AFLAGS   := -D__ASSEMBLY__
 KBUILD_AFLAGS_MODULE  := -DMODULE
 KBUILD_CFLAGS_MODULE  := -DMODULE
@@ -622,13 +670,16 @@ KBUILD_CFLAGS   += $(call cc-option,-fno-store-merging,)
 # Kill format truncation warnings
 KBUILD_CFLAGS   += $(call cc-disable-warning,format-truncation,)
 
-# Kill misleading indentation warnings (fuck you prima)
-KBUILD_CFLAGS   += $(call cc-disable-warning,misleading-indentation,)
+# Disable all maybe-uninitialized warnings
+KBUILD_CFLAGS	+= $(call cc-disable-warning,maybe-uninitialized,)
 
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
-KBUILD_CFLAGS	+= -Os $(call cc-disable-warning,maybe-uninitialized,)
+KBUILD_CFLAGS	+= -Os 
 else
-KBUILD_CFLAGS	+= -O2
+KBUILD_CFLAGS += -Os 
+KBUILD_CFLAGS += $(GRAPHITE)
+KBUILD_CFLAGS += $(OPTIMIZFLAGS)
+KBUILD_CFLAGS += $(O3-ADDS-ONLY)
 endif
 
 # Tell gcc to never replace conditional load with a non-conditional one
@@ -706,19 +757,18 @@ KBUILD_CFLAGS += $(call cc-disable-warning, unused-but-set-variable)
 KBUILD_CFLAGS += $(call cc-disable-warning, unused-const-variable)
 endif
 
-ifdef CONFIG_FRAME_POINTER
-KBUILD_CFLAGS	+= -fno-omit-frame-pointer -fno-optimize-sibling-calls
-else
+#ifdef CONFIG_FRAME_POINTER
+#KBUILD_CFLAGS	+= -fno-omit-frame-pointer -fno-optimize-sibling-calls
+#else
 # Some targets (ARM with Thumb2, for example), can't be built with frame
 # pointers.  For those, we don't have FUNCTION_TRACER automatically
 # select FRAME_POINTER.  However, FUNCTION_TRACER adds -pg, and this is
 # incompatible with -fomit-frame-pointer with current GCC, so we don't use
 # -fomit-frame-pointer with FUNCTION_TRACER.
-ifndef CONFIG_FUNCTION_TRACER
+#ifndef CONFIG_FUNCTION_TRACER
 KBUILD_CFLAGS	+= -fomit-frame-pointer
-endif
-endif
-
+#endif
+#endif
 KBUILD_CFLAGS   += $(call cc-option, -fno-var-tracking-assignments)
 
 ifdef CONFIG_DEBUG_INFO
@@ -808,9 +858,6 @@ LDFLAGS_vmlinux += $(LDFLAGS_BUILD_ID)
 ifeq ($(CONFIG_STRIP_ASM_SYMS),y)
 LDFLAGS_vmlinux	+= $(call ld-option, -X,)
 endif
-
-LDFLAGS_vmlinux += $(call ld-option, --fix-cortex-a53-843419)
-LDFLAGS_MODULE += $(call ld-option, --fix-cortex-a53-843419)
 
 # Default kernel image to build when no specific target is given.
 # KBUILD_IMAGE may be overruled on the command line or
