@@ -1,0 +1,76 @@
+#!/bin/bash
+kernel_version=${1}
+kernel_name="DarkMoon"
+device_name="Z2"
+zip_name="$kernel_name-$device_name-$kernel_version.zip"
+
+export CONFIG_FILE="darkmoon_defconfig"
+export ARCH="arm64"
+export KBUILD_BUILD_USER="DD3Boh"
+export KBUILD_BUILD_HOST="LemoncèHouse"
+export TOOLCHAIN_PATH="${HOME}/kernel/aarch64-linux-gnu-linaro-7.x"
+export CROSS_COMPILE=$TOOLCHAIN_PATH/bin/aarch64-linux-gnu-
+export CONFIG_ABS_PATH="arch/${ARCH}/configs/${CONFIG_FILE}"
+export objdir="${HOME}/kernel/zuk/darkmoon-obj"
+export sourcedir="${HOME}/kernel/zuk/DarkMoon"
+anykernel="${HOME}/kernel/zuk/darkmoon-anykernel"
+release_folder="${HOME}/kernel/zuk/darkmoon-releases"
+experimental_builds="$release_folder/Experimental-builds"
+compile() {
+  make O=$objdir ARCH=arm64  $CONFIG_FILE -j24
+  make O=$objdir -j24
+}
+clean() {
+  make O=$objdir ARCH=arm64 CROSS_COMPILE=${CROSS_COMPILE}  $CONFIG_FILE -j24
+  make O=$objdir mrproper
+}
+module_stock(){
+  rm -rf $anykernel/modules/
+  mkdir $anykernel/modules
+  find $objdir -name '*.ko' -exec cp -av {} $anykernel/modules/ \;
+  # strip modules
+ ${CROSS_COMPILE}strip --strip-unneeded $anykernel/modules/*
+  cp -rf $objdir/arch/arm64/boot/Image.gz-dtb $anykernel/zImage
+}
+delete_previous(){
+  cd $anykernel
+  find . -name "*.zip" -type f
+  find . -name "*.zip" -type f -delete
+  find . -name "*.md5" -type f
+  find . -name "*.md5" -type f -delete
+}
+build_package(){
+  zip -r9 UPDATE-AnyKernel2.zip * -x README UPDATE-AnyKernel2.zip
+}
+make_name(){
+  mv UPDATE-AnyKernel2.zip $zip_name
+}
+make_md5(){
+  md5sum $zip_name > $zip_name.md5
+}
+export_it(){
+cp -r $anykernel/$zip_name $experimental_builds/$zip_name
+cp -r $anykernel/$zip_name.md5 $experimental_builds/$zip_name.md5
+cd $release_folder
+}
+turn_back(){
+cd $sourcedir
+}
+
+compile
+module_stock
+delete_previous
+build_package
+make_name
+make_md5
+
+# automatically push the experimental builds
+if [ "${2}" == "-p" ]; then 
+	export_it
+	cd $release_folder
+	git add -A
+	git commit -m "Push $kernel_version build"
+	git push origin HEAD:DarkMoon-n
+fi;
+
+turn_back
