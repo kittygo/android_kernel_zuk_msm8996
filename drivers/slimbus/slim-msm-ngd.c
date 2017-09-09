@@ -26,7 +26,6 @@
 #include <linux/of_slimbus.h>
 #include <linux/timer.h>
 #include <linux/msm-sps.h>
-#include <linux/reboot.h>
 #include "slim-msm.h"
 
 #define NGD_SLIM_NAME	"ngd_msm_ctrl"
@@ -1319,7 +1318,7 @@ capability_retry:
 	/* reconnect BAM pipes if needed and enable NGD */
 	ngd_slim_setup(dev);
 
-	timeout = wait_for_completion_timeout(&dev->reconf, 3 * HZ);
+	timeout = wait_for_completion_timeout(&dev->reconf, HZ);
 	if (!timeout) {
 		u32 cfg = readl_relaxed(dev->base +
 					 NGD_BASE(dev->ctrl.nr, dev->ver));

@@ -320,7 +320,7 @@ static int mdss_mdp_cmd_tearcheck_cfg(struct mdss_mdp_mixer *mixer,
 		te ? te->wr_ptr_irq : 0);
 	mdss_mdp_pingpong_write(pingpong_base,
 		MDSS_MDP_REG_PP_START_POS,
-	te ? te->start_pos : 0);
+		te ? te->start_pos : 0);
 	mdss_mdp_pingpong_write(pingpong_base,
 		MDSS_MDP_REG_PP_SYNC_THRESH,
 		te ? ((te->sync_threshold_continue << 16) |
@@ -723,7 +723,7 @@ int mdss_mdp_resource_control(struct mdss_mdp_ctl *ctl, u32 sw_event)
 				schedule_work(&ctx->gate_clk_work);
 
 			/* start work item to shut down after delay */
-			queue_delayed_work(system_power_efficient_wq,
+			schedule_delayed_work(
 					&ctx->delayed_off_clk_work,
 					CMD_MODE_IDLE_TIMEOUT);
 		}
@@ -887,8 +887,7 @@ int mdss_mdp_resource_control(struct mdss_mdp_ctl *ctl, u32 sw_event)
 			 * reached. This is to prevent the case where early wake
 			 * up is called but no frame update is sent.
 			 */
-			queue_delayed_work(system_power_efficient_wq,
-				&ctx->delayed_off_clk_work,
+			schedule_delayed_work(&ctx->delayed_off_clk_work,
 				      CMD_MODE_IDLE_TIMEOUT);
 			pr_debug("off work scheduled\n");
 		}
@@ -3150,7 +3149,7 @@ static int mdss_mdp_cmd_early_wake_up(struct mdss_mdp_ctl *ctl)
 	 * Only schedule if the interface has not been stopped.
 	 */
 	if (ctx && !ctx->intf_stopped)
-		queue_work(system_highpri_wq, &ctx->early_wakeup_clk_work);
+		schedule_work(&ctx->early_wakeup_clk_work);
 	return 0;
 }
 
