@@ -582,6 +582,26 @@ config QPNP_MISC
 	  and the driver provides an API to check if this interrupt
 	  is available on the current PMIC chip.
 
+config SENSORS_SYSFS
+     tristate "Sensors sysfs"
+     default n
+     ---help---
+        Support sysfs for sensors.
+        If you say yes here you get sysfs support for MAX86X00
+        To compile this driver as a module, choose M here: the
+        module will be called sensors_core.
+
+config SENSORS_MAX86X00
+     tristate "Max86x00 Sensor"
+     depends on I2C
+     depends on SENSORS_SYSFS
+     default n
+     ---help---
+        Support Max86x00 sensors.
+        If you say yes here you get support for Max86x00
+        To compile this driver as a module, choose M here: the
+        module will be called sensors_core.
+
 config SENSORS_MAX86X00_LED_POWER
      tristate "Max86x00 Led"
      depends on I2C
