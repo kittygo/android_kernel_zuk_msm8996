@@ -1756,7 +1756,6 @@ static int fg_interleaved_mem_read(struct fg_chip *chip, u8 *val, u16 address,
 		return -EINVAL;
 	}
 
-	fg_stay_awake(&chip->memif_wakeup_source);
 	address = ((orig_address + offset) / 4) * 4;
 	offset = (orig_address + offset) % 4;
 
@@ -1836,7 +1835,6 @@ out:
 	mutex_unlock(&chip->rw_lock);
 
 exit:
-	fg_relax(&chip->memif_wakeup_source);
 	return rc;
 }
 
@@ -1857,7 +1855,6 @@ static int fg_interleaved_mem_write(struct fg_chip *chip, u8 *val, u16 address,
 		return -EINVAL;
 	}
 
-	fg_stay_awake(&chip->memif_wakeup_source);
 	address = ((orig_address + offset) / 4) * 4;
 	offset = (orig_address + offset) % 4;
 
@@ -1893,7 +1890,6 @@ out:
 		pr_err("failed to reset IMA access bit rc = %d\n", rc);
 
 	mutex_unlock(&chip->rw_lock);
-	fg_relax(&chip->memif_wakeup_source);
 	return rc;
 }
 
