@@ -10,6 +10,7 @@
 
 &mdss_dsi0 {
 	qcom,platform-bklight-en-gpio = <&pm8994_gpios 22 0>;
+    /delete-property/ qcom,platform-te-gpio;
 };
 
 &dsi_tianma_otm1901a_vid {

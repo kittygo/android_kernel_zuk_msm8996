@@ -26,7 +26,6 @@
 	status = "okay";
 };
 
-
 &lab_regulator {
 	qcom,qpnp-lab-init-voltage = <5000000>;
 	qcom,qpnp-lab-init-amoled-voltage = <4600000>;
