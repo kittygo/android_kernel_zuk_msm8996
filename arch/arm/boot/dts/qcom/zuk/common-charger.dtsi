@@ -1,5 +1,6 @@
 &pmi8994_charger {
 	qcom,battery-data = <&mtp_batterydata>;	
+	qcom,fastchg-current-ma = <2000>;
 	qcom,float-voltage-mv = <4400>;
 	qcom,thermal-mitigation = <1400 500 0>;
 	qcom,warm-cc-comp = <1300>;
@@ -24,10 +25,4 @@
 	qcom,lpg-dtest-line = <4>;
 	qcom,dtest-output = <2>;
 	status = "okay";
-};
-
-&lab_regulator {
-	qcom,qpnp-lab-init-voltage = <5000000>;
-	qcom,qpnp-lab-init-amoled-voltage = <4600000>;
-	qcom,qpnp-lab-init-lcd-voltage = <5000000>;
 };

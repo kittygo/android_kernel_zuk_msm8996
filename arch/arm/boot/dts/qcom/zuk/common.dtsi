@@ -13,9 +13,9 @@
 #include <generated/autoconf.h>
 
 / {
-    chosen {
-        bootargs = "sched_enable_hmp=1 sched_enable_power_aware=1 app_setting.use_32bit_app_setting=1 fbcon=rotate:2";
-    };
+	chosen {
+		bootargs = "sched_enable_hmp=1 sched_enable_power_aware=1 app_setting.use_32bit_app_setting=1 fbcon=rotate:2";
+	};
 	aliases {
 		i2c1 = &i2c_1;
 		i2c9 = &i2c_9;
@@ -121,7 +121,7 @@
 };
 
 &usb3 {
-    /delete-property/ vbus_dwc3-supply;
+	/delete-property/ vbus_dwc3-supply;
 };
 
 &qusb_phy0 {
@@ -274,48 +274,12 @@
 	};
 };
 
-&quat_mi2s_sd0_sleep {
-	mux {
-		pins = "gpio60";
-	};
-	config {
-		pins = "gpio60";
-	};
-};
-
-&quat_mi2s_sd0_active {
-	mux {
-		pins = "gpio60";
-	};
-	config {
-		pins = "gpio60";
-	};
-};
-
-&quat_mi2s_sd1_sleep {
-	mux {
-		pins = "gpio61";
-	};
-	config {
-		pins = "gpio61";
-	};
-};
-
-&quat_mi2s_sd1_active {
-	mux {
-		pins = "gpio61";
-	};
-	config {
-		pins = "gpio61";
-	};
-};
-
 &wsa881x_213 {
 	qcom,spkr-sd-n-gpio = <&pmi8994_gpios 3 0>;
 };
 
 &pm8994_gpios {
-    /delete-node/ gpio@cd00;
+	/delete-node/ gpio@cd00;
     
 	gpio@d500 { /* GPIO 22 - lcd_bklt_reg_en */
 		qcom,mode = <1>;	/* DIGITAL OUT */
@@ -363,6 +327,9 @@
 				qcom,s2-type = <1>;
 				qcom,use-bark;
 			};
+			qcom,pon_3 {
+				/delete-property/ qcom,support-reset;
+			};
 		};
 	};
 };
@@ -372,8 +339,12 @@
 };
 
 &pmi8994_gpios {
-    gpio@c900 {
-        qcom,src-sel = <0>;
-        qcom,invert = <1>;
-    };
+	gpio@c900 {
+		qcom,src-sel = <0>;
+		qcom,invert = <1>;
+	};
+};
+
+&i2c_8 {
+	/delete-node/ nq@28;
 };

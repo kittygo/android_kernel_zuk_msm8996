@@ -10,7 +10,7 @@
 
 &mdss_dsi0 {
 	qcom,platform-bklight-en-gpio = <&pm8994_gpios 22 0>;
-    /delete-property/ qcom,platform-te-gpio;
+	/delete-property/ qcom,platform-te-gpio;
 };
 
 &dsi_tianma_otm1901a_vid {
@@ -84,10 +84,6 @@
 	};
 };
 
-&pmi8994_charger {
-	qcom,fastchg-current-ma = <2000>;
-};
-
 &pmi8994_fg {
 	qcom,fg-iterm-ma = <125>;
 };
@@ -96,4 +92,19 @@
 	qcom,qpnp-ibb-init-voltage = <5000000>;
 	qcom,qpnp-lab-init-amoled-voltage = <4600000>;
 	qcom,qpnp-ibb-init-lcd-voltage = <5000000>;
+};
+
+&lab_regulator {
+	qcom,qpnp-lab-init-voltage = <5000000>;
+	qcom,qpnp-lab-init-amoled-voltage = <4600000>;
+	qcom,qpnp-lab-init-lcd-voltage = <5000000>;
+};
+
+&pmi8994_haptics {
+	qcom,actuator-type = "erm";
+	qcom,vmax-mv = <3200>;
+	qcom,wave-shape = "square";
+	//qcom,wave-play-rate-us = <5263>;//0~20475
+	qcom,ilim-ma = <105>;
+	qcom,int-pwm-freq-khz = <253>;//lowest:253Khz
 };
