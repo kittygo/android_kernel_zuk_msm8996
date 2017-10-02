@@ -9,6 +9,9 @@
 #include "common-usb.dtsi"
 #include "common-vibration.dtsi"
 
+#include <dt-bindings/input/ti-drv260x.h>
+#include <generated/autoconf.h>
+
 / {
     chosen {
         bootargs = "sched_enable_hmp=1 sched_enable_power_aware=1 app_setting.use_32bit_app_setting=1 fbcon=rotate:2";
