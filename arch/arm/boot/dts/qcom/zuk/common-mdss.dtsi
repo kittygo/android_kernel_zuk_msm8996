@@ -1,7 +1,5 @@
 #include "dsi-panel-samsung-1080p-cmd.dtsi"
 #include "dsi-panel-tianma-1080p-video.dtsi"
-#include "dsi-panel-tianma-ft8716-1080p-video.dtsi"
-#include "dsi-panel-boe-td4300-1080p-video.dtsi"
 
 &mdss_dsi1 {
 	/delete-property/ qcom,dsi-pref-prim-pan;
