@@ -39,22 +39,6 @@
 	qcom,dsi-pref-prim-pan = <&dsi_tianma_otm1901a_vid >;
 };
 
-&dsi_tianma_ft8716_vid {
-	qcom,mdss-dsi-bl-pmic-control-type = "bl_ctrl_dcs";
-	qcom,mdss-dsi-bl-min-level = <1>;
-	qcom,mdss-dsi-bl-max-level = <255>;
-	qcom,cont-splash-enabled;
-	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
-};
-
-&dsi_boe_td4300_vid {
-	qcom,mdss-dsi-bl-pmic-control-type = "bl_ctrl_dcs";
-	qcom,mdss-dsi-bl-min-level = <1>;
-	qcom,mdss-dsi-bl-max-level = <255>;
-	qcom,cont-splash-enabled;
-	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
- };
- 
 &dsi_tianma_otm1901a_vid {
 	qcom,mdss-dsi-bl-pmic-control-type = "bl_ctrl_pwm";
 	qcom,mdss-dsi-bl-pmic-pwm-frequency = <100>;

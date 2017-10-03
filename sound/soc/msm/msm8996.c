@@ -4041,7 +4041,7 @@ static int msm8996_asoc_machine_probe(struct platform_device *pdev)
 	}
 
 	ret = msm8996_init_wsa_dev(pdev, card);
-#if defined CONFIG_MACH_ZUK_Z2
+#if defined CONFIG_MACH_ZUK_Z2_PLUS
 	if (ret){
 		if(wsa_dev_id == 0x21170214)
 			printk("msm8996_init_wsa_dev wsa_dev_id:%llx\n", wsa_dev_id);

@@ -1,7 +1,7 @@
 #include "batterydata-z2_plus-3500mah.dtsi"
 
 #include "common.dtsi"
-#include "z2-camera-sensor.dtsi"
+#include "z2_plus-camera-sensor.dtsi"
 &usb3 {
 	maximum-speed = "high-speed";
 };

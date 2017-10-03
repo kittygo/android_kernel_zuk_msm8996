@@ -237,7 +237,7 @@ enum fg_mem_data_index {
 
 static struct fg_mem_setting settings[FG_MEM_SETTING_MAX] = {
 	/*       ID                    Address, Offset, Value*/
-#ifdef CONFIG_MACH_ZUK_Z2
+#ifdef CONFIG_MACH_ZUK_Z2_PLUS
 	SETTING(SOFT_COLD,       0x454,   0,      170),
 	SETTING(SOFT_HOT,        0x454,   1,      470),
 	SETTING(HARD_COLD,       0x454,   2,      20),
