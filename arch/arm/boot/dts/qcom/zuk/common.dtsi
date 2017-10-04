@@ -82,13 +82,6 @@
 		};
 	};
 
-	qcom,bcl {
-		#qcom,bcl-enable;
-		qcom,vph-high-threshold-uv = <3200000>;
-		qcom,vph-low-threshold-uv = <3000000>;
-		qcom,soc-low-threshold = <0>;
-	};
-
 	gpio_keys {
 		pinctrl-names = "tlmm_gpio_key_active", "tlmm_gpio_key_suspend";
 		pinctrl-0 = <&gpio_key_active>;
