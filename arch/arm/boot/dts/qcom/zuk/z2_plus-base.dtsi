@@ -1,7 +1,19 @@
 #include "batterydata-z2_plus-3500mah.dtsi"
 
 #include "common.dtsi"
+#include "dsi-panel-tianma-1080p-video.dtsi"
 #include "z2_plus-camera-sensor.dtsi"
+
+&dsi_tianma_otm1901a_vid {
+	qcom,mdss-dsi-bl-pmic-control-type = "bl_ctrl_pwm";
+	qcom,mdss-dsi-bl-pmic-pwm-frequency = <100>;
+	qcom,mdss-dsi-bl-pmic-bank-select = <3>;
+	qcom,mdss-dsi-pwm-gpio = <&pmi8994_mpps 1 0>;
+	qcom,mdss-dsi-bl-min-level = <1>;
+	qcom,mdss-dsi-bl-max-level = <4095>;
+	qcom,cont-splash-enabled;
+};
+
 &usb3 {
 	maximum-speed = "high-speed";
 };
@@ -9,6 +21,7 @@
 &mdss_dsi0 {
 	qcom,platform-bklight-en-gpio = <&pm8994_gpios 22 0>;
 	/delete-property/ qcom,platform-te-gpio;
+	qcom,dsi-pref-prim-pan = <&dsi_tianma_otm1901a_vid >;
 };
 
 &dsi_tianma_otm1901a_vid {
