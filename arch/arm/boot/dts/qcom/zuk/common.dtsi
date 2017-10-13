@@ -13,9 +13,6 @@
 #include <generated/autoconf.h>
 
 / {
-	chosen {
-		bootargs = "sched_enable_hmp=1 sched_enable_power_aware=1 app_setting.use_32bit_app_setting=1 fbcon=rotate:2";
-	};
 	aliases {
 		i2c1 = &i2c_1;
 		i2c9 = &i2c_9;
