@@ -203,10 +203,6 @@
 	qpnp,qpnp-labibb-mode = "amoled";
 };
 
-&dsi_tianma_otm1901a_vid {
-	qcom,panel-supply-entries = <&dsi_panel_pwr_supply_no_labibb>;
-};
-
 &cclogic_defaultnone_active {
 	mux {
 		pins = "gpio0", "gpio33", "gpio79", "gpio81";
@@ -229,7 +225,7 @@
 	qcom,fg-iterm-ma = <125>;
 };
 
-&dmss_dsi0 {
+&mdss_dsi0 {
 	/delete-property/ qcom,platform-bklight-en-gpio;
 	qcom,platform-enable-gpio = <&tlmm 76 0>;
 };

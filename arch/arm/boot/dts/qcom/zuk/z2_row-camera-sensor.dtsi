@@ -18,7 +18,7 @@
     qcom,gpio-req-tbl-flags = <1 0>;
     qcom,gpio-req-tbl-label = "CAMIF_MCLK0", "CAM_RESET0";
     /delete-property/ qcom,clock-rates;
-}
+};
 
 &cci {
 	qcom,camera@0 {
